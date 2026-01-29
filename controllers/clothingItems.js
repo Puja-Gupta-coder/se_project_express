@@ -1,8 +1,7 @@
 const ClothingItem = require("../models/clothingitem");
 
 const createItem = (req, res) => {
-  const { name, weather, imageUrl, imageURL } = req.body;
-  const url = imageURL || imageUrl;
+  const { name, weather, imageUrl } = req.body;
 
   // Validate name length
   if (
@@ -14,13 +13,8 @@ const createItem = (req, res) => {
     return res.status(400).send({ message: "Validation error" });
   }
 
-  return ClothingItem.create({ name, weather, imageURL: url })
-    .then((item) => {
-      const response = item.toObject();
-      response.imageUrl = response.imageURL;
-      delete response.imageURL;
-      res.status(201).send(response);
-    })
+  return ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
+    .then((item) => res.status(201).send(item))
     .catch((err) =>
       err.name === "ValidationError"
         ? res.status(400).send({ message: "Validation error", err })
@@ -33,29 +27,6 @@ const getItems = (req, res) => {
     .then((items) => res.status(200).send(items))
     .catch((err) =>
       res.status(500).send({ message: "Error from getItems", err })
-    );
-};
-
-const updateItem = (req, res) => {
-  const { itemId } = req.params;
-  const { imageURL } = req.body;
-
-  return ClothingItem.findByIdAndUpdate(
-    itemId,
-    { imageURL },
-    { new: true, runValidators: true }
-  )
-    .then((item) =>
-      !item
-        ? res.status(404).send({ message: "Item not found" })
-        : res.status(200).send(item)
-    )
-    .catch((err) =>
-      err.name === "ValidationError"
-        ? res.status(400).send({ message: "Validation error", err })
-        : err.name === "CastError"
-        ? res.status(400).send({ message: "Invalid item ID", err })
-        : res.status(500).send({ message: "Error from updateItem", err })
     );
 };
 
@@ -93,7 +64,7 @@ const likeItem = (req, res) =>
         err.name === "CastError" ||
         err.message.includes("Cast to ObjectId failed")
       ) {
-        res.status(404).send({ message: "Item not found" });
+        res.status(400).send({ message: "Item not found" });
       } else {
         res.status(500).send({ message: "Error from likeItem", err });
       }
@@ -126,7 +97,6 @@ const dislikeItem = (req, res) =>
 module.exports = {
   createItem,
   getItems,
-  updateItem,
   deleteItem,
   likeItem,
   dislikeItem,

@@ -25,7 +25,9 @@ const createUser = (req, res) => {
     .catch((err) =>
       err.name === "ValidationError"
         ? res.status(400).send({ message: "Validation error" })
-        : res.status(500).send({ message: err.message })
+        : res
+            .status(500)
+            .send({ message: "An error has occured on the server" })
     );
 };
 
@@ -39,7 +41,7 @@ const getUser = (req, res) => {
     )
     .catch((err) =>
       err.name === "CastError"
-        ? res.status(404).send({ message: "User not found" })
+        ? res.status(400).send({ message: "User not found" })
         : res.status(500).send({ message: err.message })
     );
 };
