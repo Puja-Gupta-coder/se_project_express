@@ -13,26 +13,26 @@ const createItem = (req, res) => {
     return res.status(400).send({ message: "Validation error" });
   }
 
-  ClothingItem.create({ name, weather, imageURL: url })
+  return ClothingItem.create({ name, weather, imageURL: url })
     .then((item) => {
       const response = item.toObject();
-      response.imageURL = response.imageURL;
+      response.imageUrl = response.imageURL;
       delete response.imageURL;
-      res.status(201).send(response);
+      return res.status(201).send(response);
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
         return res.status(400).send({ message: "Validation error", err });
       }
-      res.status(500).send({ message: "Error from createItem", err });
+      return res.status(500).send({ message: "Error from createItem", err });
     });
 };
 
 const getItems = (req, res) => {
-  ClothingItem.find({})
+  return ClothingItem.find({})
     .then((items) => res.status(200).send(items))
     .catch((err) => {
-      res.status(500).send({ message: "Error from getItems", err });
+      return res.status(500).send({ message: "Error from getItems", err });
     });
 };
 
@@ -40,7 +40,7 @@ const updateItem = (req, res) => {
   const { itemId } = req.params;
   const { imageURL } = req.body;
 
-  ClothingItem.findByIdAndUpdate(
+  return ClothingItem.findByIdAndUpdate(
     itemId,
     { imageURL },
     { new: true, runValidators: true }
@@ -58,14 +58,14 @@ const updateItem = (req, res) => {
       if (err.name === "CastError") {
         return res.status(400).send({ message: "Invalid item ID", err });
       }
-      res.status(500).send({ message: "Error from updateItem", err });
+      return res.status(500).send({ message: "Error from updateItem", err });
     });
 };
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
   console.log(itemId);
-  ClothingItem.findByIdAndDelete(itemId)
+  return ClothingItem.findByIdAndDelete(itemId)
     .then((item) => {
       if (!item) {
         return res.status(404).send({ message: "Item not found" });
@@ -76,12 +76,12 @@ const deleteItem = (req, res) => {
       if (err.name === "CastError") {
         return res.status(400).send({ message: "Invalid item ID", err });
       }
-      res.status(500).send({ message: "Error from deleteItem", err });
+      return res.status(500).send({ message: "Error from deleteItem", err });
     });
 };
 
 const likeItem = (req, res) => {
-  ClothingItem.findByIdAndUpdate(
+  return ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: req.user._id } },
     { new: true }
@@ -99,12 +99,12 @@ const likeItem = (req, res) => {
       ) {
         return res.status(404).send({ message: "Item not found" });
       }
-      res.status(500).send({ message: "Error from likeItem", err });
+      return res.status(500).send({ message: "Error from likeItem", err });
     });
 };
 
 const dislikeItem = (req, res) => {
-  ClothingItem.findByIdAndUpdate(
+  return ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $pull: { likes: req.user._id } },
     { new: true }
@@ -122,7 +122,7 @@ const dislikeItem = (req, res) => {
       ) {
         return res.status(404).send({ message: "Item not found" });
       }
-      res.status(500).send({ message: "Error from dislikeItem", err });
+      return res.status(500).send({ message: "Error from dislikeItem", err });
     });
 };
 

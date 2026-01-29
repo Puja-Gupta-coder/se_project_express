@@ -2,7 +2,7 @@ const user = require("../models/user");
 
 // Get all users
 const getUsers = (req, res) => {
-  user
+  return user
     .find({})
     .then((users) => res.status(200).send(users))
     .catch((err) => res.status(500).send({ message: err.message }));
@@ -21,7 +21,7 @@ const createUser = (req, res) => {
     return res.status(400).send({ message: "Validation error" });
   }
 
-  user
+  return user
     .create({ name, avatar })
     .then((user) => res.status(201).send(user))
     .catch((err) => {
