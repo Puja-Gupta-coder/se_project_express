@@ -1,9 +1,29 @@
 const ClothingItem = require("../models/clothingitem");
 const createItem = (req, res) => {
-  const { name, weather, imageURL } = req.body;
-  ClothingItem.create({ name, weather, imageURL })
-    .then((item) => res.send(item))
+  const { name, weather, imageUrl, imageURL } = req.body;
+  const url = imageURL || imageUrl;
+
+  // Validate name length
+  if (
+    !name ||
+    typeof name !== "string" ||
+    name.trim().length < 2 ||
+    name.length > 30
+  ) {
+    return res.status(400).send({ message: "Validation error" });
+  }
+
+  ClothingItem.create({ name, weather, imageURL: url })
+    .then((item) => {
+      const response = item.toObject();
+      response.imageURL = response.imageURL;
+      delete response.imageURL;
+      res.status(201).send(response);
+    })
     .catch((err) => {
+      if (err.name === "ValidationError") {
+        return res.status(400).send({ message: "Validation error", err });
+      }
       res.status(500).send({ message: "Error from createItem", err });
     });
 };
@@ -32,6 +52,12 @@ const updateItem = (req, res) => {
       return res.status(200).send(item);
     })
     .catch((err) => {
+      if (err.name === "ValidationError") {
+        return res.status(400).send({ message: "Validation error", err });
+      }
+      if (err.name === "CastError") {
+        return res.status(400).send({ message: "Invalid item ID", err });
+      }
       res.status(500).send({ message: "Error from updateItem", err });
     });
 };
@@ -47,8 +73,64 @@ const deleteItem = (req, res) => {
       return res.status(200).send(item);
     })
     .catch((err) => {
+      if (err.name === "CastError") {
+        return res.status(400).send({ message: "Invalid item ID", err });
+      }
       res.status(500).send({ message: "Error from deleteItem", err });
     });
 };
 
-module.exports = { createItem, getItems, updateItem, deleteItem };
+const likeItem = (req, res) => {
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true }
+  )
+    .then((item) => {
+      if (!item) {
+        return res.status(404).send({ message: "Item not found" });
+      }
+      return res.status(200).send(item);
+    })
+    .catch((err) => {
+      if (
+        err.name === "CastError" ||
+        err.message.includes("Cast to ObjectId failed")
+      ) {
+        return res.status(404).send({ message: "Item not found" });
+      }
+      res.status(500).send({ message: "Error from likeItem", err });
+    });
+};
+
+const dislikeItem = (req, res) => {
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $pull: { likes: req.user._id } },
+    { new: true }
+  )
+    .then((item) => {
+      if (!item) {
+        return res.status(404).send({ message: "Item not found" });
+      }
+      return res.status(200).send(item);
+    })
+    .catch((err) => {
+      if (
+        err.name === "CastError" ||
+        err.message.includes("Cast to ObjectId failed")
+      ) {
+        return res.status(404).send({ message: "Item not found" });
+      }
+      res.status(500).send({ message: "Error from dislikeItem", err });
+    });
+};
+
+module.exports = {
+  createItem,
+  getItems,
+  updateItem,
+  deleteItem,
+  likeItem,
+  dislikeItem,
+};

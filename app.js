@@ -13,7 +13,6 @@ mongoose
 const { PORT = 3001 } = process.env;
 app.use(express.json());
 const routes = require("./routes/index");
-app.use("/", routes);
 
 app.use((req, res, next) => {
   req.user = {
@@ -21,6 +20,8 @@ app.use((req, res, next) => {
   };
   next();
 });
+
+app.use("/", routes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

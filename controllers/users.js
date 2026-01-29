@@ -10,13 +10,24 @@ const getUsers = (req, res) => {
 
 const createUser = (req, res) => {
   const { name, avatar } = req.body;
+
+  // Validate name length
+  if (
+    !name ||
+    typeof name !== "string" ||
+    name.trim().length < 2 ||
+    name.length > 30
+  ) {
+    return res.status(400).send({ message: "Validation error" });
+  }
+
   user
     .create({ name, avatar })
     .then((user) => res.status(201).send(user))
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
-        return res.status(400).send({ message: err.message });
+        return res.status(400).send({ message: "Validation error" });
       }
       return res.status(500).send({ message: err.message });
     });
@@ -35,7 +46,7 @@ const getUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "CastError") {
-        return res.status(400).send({ message: "Invalid user ID" });
+        return res.status(404).send({ message: "User not found" });
       }
       return res.status(500).send({ message: err.message });
     });
