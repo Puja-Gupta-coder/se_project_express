@@ -1,9 +1,8 @@
-const user = require("../models/user");
+const UserModel = require("../models/user");
 
 // Get all users
 const getUsers = (req, res) => {
-  return user
-    .find({})
+  return UserModel.find({})
     .then((users) => res.status(200).send(users))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
@@ -21,8 +20,7 @@ const createUser = (req, res) => {
     return res.status(400).send({ message: "Validation error" });
   }
 
-  return user
-    .create({ name, avatar })
+  return UserModel.create({ name, avatar })
     .then((user) => res.status(201).send(user))
     .catch((err) => {
       console.error(err);
@@ -35,8 +33,7 @@ const createUser = (req, res) => {
 
 const getUser = (req, res) => {
   const { userId } = req.params;
-  user
-    .findById(userId)
+  return UserModel.findById(userId)
     .then((user) => {
       if (!user) {
         return res.status(404).send({ message: "User not found" });
