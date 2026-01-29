@@ -21,13 +21,11 @@ const createItem = (req, res) => {
       delete response.imageURL;
       res.status(201).send(response);
     })
-    .catch((err) => {
-      if (err.name === "ValidationError") {
-        res.status(400).send({ message: "Validation error", err });
-      } else {
-        res.status(500).send({ message: "Error from createItem", err });
-      }
-    });
+    .catch((err) =>
+      err.name === "ValidationError"
+        ? res.status(400).send({ message: "Validation error", err })
+        : res.status(500).send({ message: "Error from createItem", err })
+    );
 };
 
 const getItems = (req, res) => {

@@ -22,13 +22,11 @@ const createUser = (req, res) => {
 
   return UserModel.create({ name, avatar })
     .then((user) => res.status(201).send(user))
-    .catch((err) => {
-      console.error(err);
-      if (err.name === "ValidationError") {
-        return res.status(400).send({ message: "Validation error" });
-      }
-      return res.status(500).send({ message: err.message });
-    });
+    .catch((err) =>
+      err.name === "ValidationError"
+        ? res.status(400).send({ message: "Validation error" })
+        : res.status(500).send({ message: err.message })
+    );
 };
 
 const getUser = (req, res) => {
