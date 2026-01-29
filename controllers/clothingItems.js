@@ -45,42 +45,34 @@ const updateItem = (req, res) => {
     { imageURL },
     { new: true, runValidators: true }
   )
-    .then((item) => {
-      if (!item) {
-        res.status(404).send({ message: "Item not found" });
-      } else {
-        res.status(200).send(item);
-      }
-    })
-    .catch((err) => {
-      if (err.name === "ValidationError") {
-        res.status(400).send({ message: "Validation error", err });
-      } else if (err.name === "CastError") {
-        res.status(400).send({ message: "Invalid item ID", err });
-      } else {
-        res.status(500).send({ message: "Error from updateItem", err });
-      }
-    });
+    .then((item) =>
+      !item
+        ? res.status(404).send({ message: "Item not found" })
+        : res.status(200).send(item)
+    )
+    .catch((err) =>
+      err.name === "ValidationError"
+        ? res.status(400).send({ message: "Validation error", err })
+        : err.name === "CastError"
+        ? res.status(400).send({ message: "Invalid item ID", err })
+        : res.status(500).send({ message: "Error from updateItem", err })
+    );
 };
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
   console.log(itemId);
   return ClothingItem.findByIdAndDelete(itemId)
-    .then((item) => {
-      if (!item) {
-        res.status(404).send({ message: "Item not found" });
-      } else {
-        res.status(200).send(item);
-      }
-    })
-    .catch((err) => {
-      if (err.name === "CastError") {
-        res.status(400).send({ message: "Invalid item ID", err });
-      } else {
-        res.status(500).send({ message: "Error from deleteItem", err });
-      }
-    });
+    .then((item) =>
+      !item
+        ? res.status(404).send({ message: "Item not found" })
+        : res.status(200).send(item)
+    )
+    .catch((err) =>
+      err.name === "CastError"
+        ? res.status(400).send({ message: "Invalid item ID", err })
+        : res.status(500).send({ message: "Error from deleteItem", err })
+    );
 };
 
 const likeItem = (req, res) =>

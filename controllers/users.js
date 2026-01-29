@@ -32,19 +32,16 @@ const createUser = (req, res) => {
 const getUser = (req, res) => {
   const { userId } = req.params;
   return UserModel.findById(userId)
-    .then((user) => {
-      if (!user) {
-        return res.status(404).send({ message: "User not found" });
-      }
-      return res.status(200).send(user);
-    })
-    .catch((err) => {
-      console.error(err);
-      if (err.name === "CastError") {
-        return res.status(404).send({ message: "User not found" });
-      }
-      return res.status(500).send({ message: err.message });
-    });
+    .then((user) =>
+      !user
+        ? res.status(404).send({ message: "User not found" })
+        : res.status(200).send(user)
+    )
+    .catch((err) =>
+      err.name === "CastError"
+        ? res.status(404).send({ message: "User not found" })
+        : res.status(500).send({ message: err.message })
+    );
 };
 
 module.exports = { getUsers, createUser, getUser };
