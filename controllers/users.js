@@ -1,49 +1,80 @@
 const UserModel = require("../models/user");
+const {
+  BAD_REQUEST_ERROR_CODE,
+  NOT_FOUND_ERROR_CODE,
+  INTERNAL_SERVER_ERROR_CODE,
+} = require("../utils/errors");
 
-// Get all users
+/**
+ * Get all users
+ */
 const getUsers = (req, res) => {
-  return UserModel.find({})
+  UserModel.find({})
     .then((users) => res.status(200).send(users))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(() =>
+      res
+        .status(INTERNAL_SERVER_ERROR_CODE)
+        .send({ message: "An error has occurred on the server" })
+    );
 };
 
+/**
+ * Create a new user
+ */
 const createUser = (req, res) => {
   const { name, avatar } = req.body;
 
-  // Validate name length
+  // Basic validation
   if (
     !name ||
     typeof name !== "string" ||
     name.trim().length < 2 ||
     name.length > 30
   ) {
-    return res.status(400).send({ message: "Validation error" });
+    return res
+      .status(BAD_REQUEST_ERROR_CODE)
+      .send({ message: "Validation error" });
   }
 
-  return UserModel.create({ name, avatar })
+  UserModel.create({ name, avatar })
     .then((user) => res.status(201).send(user))
-    .catch((err) =>
-      err.name === "ValidationError"
-        ? res.status(400).send({ message: "Validation error" })
-        : res
-            .status(500)
-            .send({ message: "An error has occured on the server" })
-    );
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        res
+          .status(BAD_REQUEST_ERROR_CODE)
+          .send({ message: "Validation error" });
+      } else {
+        res
+          .status(INTERNAL_SERVER_ERROR_CODE)
+          .send({ message: "An error has occurred on the server" });
+      }
+    });
 };
 
+/**
+ * Get user by ID
+ */
 const getUser = (req, res) => {
   const { userId } = req.params;
-  return UserModel.findById(userId)
-    .then((user) =>
-      !user
-        ? res.status(404).send({ message: "User not found" })
-        : res.status(200).send(user)
-    )
-    .catch((err) =>
-      err.name === "CastError"
-        ? res.status(400).send({ message: "User not found" })
-        : res.status(500).send({ message: err.message })
-    );
+
+  UserModel.findById(userId)
+    .orFail(() => {
+      const error = new Error("User not found");
+      error.statusCode = NOT_FOUND_ERROR_CODE;
+      throw error;
+    })
+    .then((user) => res.status(200).send(user))
+    .catch((err) => {
+      if (err.name === "CastError") {
+        res.status(BAD_REQUEST_ERROR_CODE).send({ message: "Invalid user ID" });
+      } else if (err.statusCode === NOT_FOUND_ERROR_CODE) {
+        res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
+      } else {
+        res
+          .status(INTERNAL_SERVER_ERROR_CODE)
+          .send({ message: "An error has occurred on the server" });
+      }
+    });
 };
 
 module.exports = { getUsers, createUser, getUser };

@@ -1,4 +1,9 @@
 const ClothingItem = require("../models/clothingitem");
+const {
+  BAD_REQUEST_ERROR_CODE,
+  NOT_FOUND_ERROR_CODE,
+  INTERNAL_SERVER_ERROR_CODE,
+} = require("../utils/errors");
 
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
@@ -10,15 +15,17 @@ const createItem = (req, res) => {
     name.trim().length < 2 ||
     name.length > 30
   ) {
-    return res.status(400).send({ message: "Validation error" });
+    return res
+      .status(BAD_REQUEST_ERROR_CODE)
+      .send({ message: "Validation error" });
   }
 
   return ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => res.status(201).send(item))
     .catch((err) =>
       err.name === "ValidationError"
-        ? res.status(400).send({ message: "Validation error", err })
-        : res.status(500).send({ message: "Error from createItem", err })
+        ? res.status(BAD_REQUEST_ERROR_CODE).send({ message: "Invalid data" })
+        : res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: "Error from createItem", err })
     );
 };
 
@@ -26,7 +33,7 @@ const getItems = (req, res) => {
   return ClothingItem.find({})
     .then((items) => res.status(200).send(items))
     .catch((err) =>
-      res.status(500).send({ message: "Error from getItems", err })
+      res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: "Error from getItems", err })
     );
 };
 
@@ -36,13 +43,17 @@ const deleteItem = (req, res) => {
   return ClothingItem.findByIdAndDelete(itemId)
     .then((item) =>
       !item
-        ? res.status(404).send({ message: "Item not found" })
+        ? res.status(NOT_FOUND_ERROR_CODE).send({ message: "Item not found" })
         : res.status(200).send(item)
     )
     .catch((err) =>
       err.name === "CastError"
-        ? res.status(400).send({ message: "Invalid item ID", err })
-        : res.status(500).send({ message: "Error from deleteItem", err })
+        ? res
+            .status(BAD_REQUEST_ERROR_CODE)
+            .send({ message: "Invalid item ID", err })
+        : res
+            .status(INTERNAL_SERVER_ERROR_CODE)
+            .send({ message: "Error from deleteItem", err })
     );
 };
 
@@ -54,7 +65,7 @@ const likeItem = (req, res) =>
   )
     .then((item) => {
       if (!item) {
-        res.status(404).send({ message: "Item not found" });
+        res.status(NOT_FOUND_ERROR_CODE).send({ message: "Item not found" });
       } else {
         res.status(200).send(item);
       }
@@ -64,9 +75,11 @@ const likeItem = (req, res) =>
         err.name === "CastError" ||
         err.message.includes("Cast to ObjectId failed")
       ) {
-        res.status(400).send({ message: "Item not found" });
+        res.status(BAD_REQUEST_ERROR_CODE).send({ message: "Item not found" });
       } else {
-        res.status(500).send({ message: "Error from likeItem", err });
+        res
+          .status(INTERNAL_SERVER_ERROR_CODE)
+          .send({ message: "Error from likeItem", err });
       }
     });
 
@@ -78,7 +91,7 @@ const dislikeItem = (req, res) =>
   )
     .then((item) => {
       if (!item) {
-        res.status(404).send({ message: "Item not found" });
+        res.status(NOT_FOUND_ERROR_CODE).send({ message: "Item not found" });
       } else {
         res.status(200).send(item);
       }
@@ -88,9 +101,11 @@ const dislikeItem = (req, res) =>
         err.name === "CastError" ||
         err.message.includes("Cast to ObjectId failed")
       ) {
-        res.status(404).send({ message: "Item not found" });
+        res.status(BAD_REQUEST_ERROR_CODE).send({ message: "Item not found" });
       } else {
-        res.status(500).send({ message: "Error from dislikeItem", err });
+        res
+          .status(INTERNAL_SERVER_ERROR_CODE)
+          .send({ message: "Error from dislikeItem", err });
       }
     });
 
