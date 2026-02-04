@@ -25,15 +25,18 @@ const createItem = (req, res) => {
     .catch((err) =>
       err.name === "ValidationError"
         ? res.status(BAD_REQUEST_ERROR_CODE).send({ message: "Invalid data" })
-        : res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: "Error from createItem", err })
+        : res
+            .status(INTERNAL_SERVER_ERROR_CODE)
+            .send({ message: "Error from createItem" })
     );
 };
-
 const getItems = (req, res) => {
   return ClothingItem.find({})
     .then((items) => res.status(200).send(items))
     .catch((err) =>
-      res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: "Error from getItems", err })
+      res
+        .status(INTERNAL_SERVER_ERROR_CODE)
+        .send({ message: "Error from getItems", err })
     );
 };
 

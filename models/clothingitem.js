@@ -37,11 +37,6 @@ const clothingItemSchema = new mongoose.Schema({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     default: [],
   },
-  owner: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: "User",
-  },
 });
 
 module.exports = mongoose.model("ClothingItem", clothingItemSchema);
