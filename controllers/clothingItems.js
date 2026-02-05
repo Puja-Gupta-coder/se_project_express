@@ -36,13 +36,12 @@ const getItems = (req, res) => {
     .catch((err) =>
       res
         .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: "Error from getItems", err })
+        .send({ message: "Error from getItems" })
     );
 };
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
-  console.log(itemId);
   return ClothingItem.findByIdAndDelete(itemId)
     .then((item) =>
       !item
@@ -53,10 +52,10 @@ const deleteItem = (req, res) => {
       err.name === "CastError"
         ? res
             .status(BAD_REQUEST_ERROR_CODE)
-            .send({ message: "Invalid item ID", err })
+            .send({ message: "Invalid item ID" })
         : res
             .status(INTERNAL_SERVER_ERROR_CODE)
-            .send({ message: "Error from deleteItem", err })
+            .send({ message: "Error from deleteItem" })
     );
 };
 
@@ -82,7 +81,7 @@ const likeItem = (req, res) =>
       } else {
         res
           .status(INTERNAL_SERVER_ERROR_CODE)
-          .send({ message: "Error from likeItem", err });
+          .send({ message: "Error from likeItem" });
       }
     });
 
@@ -108,7 +107,7 @@ const dislikeItem = (req, res) =>
       } else {
         res
           .status(INTERNAL_SERVER_ERROR_CODE)
-          .send({ message: "Error from dislikeItem", err });
+          .send({ message: "Error from dislikeItem"});
       }
     });
 
