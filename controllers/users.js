@@ -4,6 +4,7 @@ const UserModel = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
 const {
   BAD_REQUEST_ERROR_CODE,
+  UNAUTHORIZED_ERROR_CODE,
   CONFLICT_ERROR_CODE,
   NOT_FOUND_ERROR_CODE,
   INTERNAL_SERVER_ERROR_CODE,
@@ -105,7 +106,13 @@ const getCurrentUser = (req, res) => {
 const login = (req, res) => {
   const { email, password } = req.body;
 
-  UserModel.findUserByCredentials(email, password)
+  if (!email || !password) {
+    return res
+      .status(BAD_REQUEST_ERROR_CODE)
+      .send({ message: "Email and password are required" });
+  }
+
+  return UserModel.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
@@ -113,7 +120,9 @@ const login = (req, res) => {
       res.status(200).send({ token });
     })
     .catch(() => {
-      res.status(401).send({ message: "Incorrect email or password" });
+      res
+        .status(UNAUTHORIZED_ERROR_CODE)
+        .send({ message: "Incorrect email or password" });
     });
 };
 

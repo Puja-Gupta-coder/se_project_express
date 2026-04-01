@@ -92,7 +92,7 @@ const likeItem = (req, res) =>
         err.name === "CastError" ||
         err.message.includes("Cast to ObjectId failed")
       ) {
-        res.status(BAD_REQUEST_ERROR_CODE).send({ message: "Item not found" });
+        res.status(BAD_REQUEST_ERROR_CODE).send({ message: "Invalid item ID" });
       } else {
         res
           .status(INTERNAL_SERVER_ERROR_CODE)
@@ -118,7 +118,7 @@ const dislikeItem = (req, res) =>
         err.name === "CastError" ||
         err.message.includes("Cast to ObjectId failed")
       ) {
-        res.status(BAD_REQUEST_ERROR_CODE).send({ message: "Item not found" });
+        res.status(BAD_REQUEST_ERROR_CODE).send({ message: "Invalid item ID" });
       } else {
         res
           .status(INTERNAL_SERVER_ERROR_CODE)
