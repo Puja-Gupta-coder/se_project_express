@@ -19,7 +19,7 @@ const getUsers = (req, res) => {
     .catch(() =>
       res
         .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: "An error has occurred on the server" })
+        .send({ message: "An error has occurred on the server" }),
     );
 };
 
@@ -50,7 +50,7 @@ const createUser = (req, res) => {
   return bcrypt
     .hash(password, 10)
     .then((hashedPassword) =>
-      UserModel.create({ name, avatar, email, password: hashedPassword })
+      UserModel.create({ name, avatar, email, password: hashedPassword }),
     )
     .then((user) => {
       const userResponse = user.toObject();
@@ -119,10 +119,15 @@ const login = (req, res) => {
       });
       res.status(200).send({ token });
     })
-    .catch(() => {
-      res
-        .status(UNAUTHORIZED_ERROR_CODE)
-        .send({ message: "Incorrect email or password" });
+    .catch((err) => {
+      if (err.message === "Incorrect email or password") {
+        return res
+          .status(UNAUTHORIZED_ERROR_CODE)
+          .send({ message: "Incorrect email or password" });
+      }
+      return res
+        .status(INTERNAL_SERVER_ERROR_CODE)
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -136,7 +141,7 @@ const updateUser = (req, res) => {
   UserModel.findByIdAndUpdate(
     _id,
     { name, avatar },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   )
     .orFail(() => {
       const error = new Error("User not found");

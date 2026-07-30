@@ -28,7 +28,7 @@ const createItem = (req, res) => {
         ? res.status(BAD_REQUEST_ERROR_CODE).send({ message: "Invalid data" })
         : res
             .status(INTERNAL_SERVER_ERROR_CODE)
-            .send({ message: "Error from createItem" })
+            .send({ message: "Error from createItem" }),
     );
 };
 const getItems = (req, res) =>
@@ -37,7 +37,7 @@ const getItems = (req, res) =>
     .catch(() =>
       res
         .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: "Error from getItems" })
+        .send({ message: "Error from getItems" }),
     );
 
 const deleteItem = (req, res) => {
@@ -59,7 +59,7 @@ const deleteItem = (req, res) => {
       }
 
       return ClothingItem.findByIdAndDelete(itemId).then((deletedItem) =>
-        res.status(200).send(deletedItem)
+        res.status(200).send(deletedItem),
       );
     })
     .catch((err) => {
@@ -78,52 +78,56 @@ const likeItem = (req, res) =>
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: req.user._id } },
-    { new: true }
+    { new: true },
   )
     .then((item) => {
       if (!item) {
-        res.status(NOT_FOUND_ERROR_CODE).send({ message: "Item not found" });
-      } else {
-        res.status(200).send(item);
+        return res
+          .status(NOT_FOUND_ERROR_CODE)
+          .send({ message: "Item not found" });
       }
+      return res.send(item);
     })
     .catch((err) => {
       if (
         err.name === "CastError" ||
         err.message.includes("Cast to ObjectId failed")
       ) {
-        res.status(BAD_REQUEST_ERROR_CODE).send({ message: "Invalid item ID" });
-      } else {
-        res
-          .status(INTERNAL_SERVER_ERROR_CODE)
-          .send({ message: "Error from likeItem" });
+        return res
+          .status(BAD_REQUEST_ERROR_CODE)
+          .send({ message: "Invalid item ID" });
       }
+      return res
+        .status(INTERNAL_SERVER_ERROR_CODE)
+        .send({ message: "Error from likeItem" });
     });
 
 const dislikeItem = (req, res) =>
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $pull: { likes: req.user._id } },
-    { new: true }
+    { new: true },
   )
     .then((item) => {
       if (!item) {
-        res.status(NOT_FOUND_ERROR_CODE).send({ message: "Item not found" });
-      } else {
-        res.status(200).send(item);
+        return res
+          .status(NOT_FOUND_ERROR_CODE)
+          .send({ message: "Item not found" });
       }
+      return res.send(item);
     })
     .catch((err) => {
       if (
         err.name === "CastError" ||
         err.message.includes("Cast to ObjectId failed")
       ) {
-        res.status(BAD_REQUEST_ERROR_CODE).send({ message: "Invalid item ID" });
-      } else {
-        res
-          .status(INTERNAL_SERVER_ERROR_CODE)
-          .send({ message: "Error from dislikeItem" });
+        return res
+          .status(BAD_REQUEST_ERROR_CODE)
+          .send({ message: "Invalid item ID" });
       }
+      return res
+        .status(INTERNAL_SERVER_ERROR_CODE)
+        .send({ message: "Error from dislikeItem" });
     });
 
 module.exports = {
