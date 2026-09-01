@@ -1,21 +1,40 @@
-# WTWR (What to Wear?): Back End
+# WTWR (What to Wear?) — Back End
 
-Description
+WTWR is a full-stack clothing application backend that stores users and clothing items, handles authentication, validates incoming requests, and protects private routes with JWT-based authorization.
 
-The WTWR backend project is focused on building a robust server for the WTWR application. This project enhances understanding of database management, API development, and error handling. The goal is to create a fully functional backend that will support user authentication, data storage, and API interactions.
+## Project functionality
 
-Technologies Used
-• Node.js - JavaScript runtime environment
-• Express.js - Web framework for Node.js
-• MongoDB - NoSQL database for data storage
-• Mongoose - ODM for interacting with MongoDB
+- User signup and signin with email/password authentication
+- JWT-based session management for protected routes
+- Clothing item creation, listing, liking, unliking, and ownership-based deletion
+- MongoDB storage with Mongoose schemas
+- Centralized error handling and request/error logging
+- Input validation using Celebrate and Joi
 
-Features
-• RESTful API endpoints
-• Database integration with MongoDB
+## Technologies and techniques used
 
-## Running the Project
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- JWT authentication
+- bcrypt password hashing
+- Celebrate + Joi validation
+- Winston + Express-Winston logging
+- CORS for browser access
+- ESLint with Airbnb base configuration
 
-`npm run start` — to launch the server
+## Local development
 
-`npm run dev` — to launch the server with the hot reload feature
+- Start the server: `npm run start`
+- Start in development mode with hot reload: `npm run dev`
+- Run lint checks: `npm run lint`
+
+## Local API URL
+
+- http://localhost:3001
+
+## Notes
+
+- Request logs are written to `request.log`
+- Error logs are written to `error.log`
