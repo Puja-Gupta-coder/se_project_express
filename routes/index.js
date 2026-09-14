@@ -3,6 +3,7 @@ const userRouter = require("./users");
 const clothingitem = require("./clothingItems");
 const { login, createUser } = require("../controllers/users");
 const auth = require("../middlewares/auth");
+const { NotFoundError } = require("../utils/errors");
 const {
   validateLogin,
   validateUserBody,
@@ -15,7 +16,7 @@ router.use("/items", clothingitem);
 
 router.use("/users", auth, userRouter);
 
-router.use((req, res) => {
-  res.status(404).send({ message: "Route not found" });
+router.use(() => {
+  throw new NotFoundError("Route not found");
 });
 module.exports = router;

@@ -2,9 +2,10 @@
 
 WTWR is a full-stack clothing application backend that stores users and clothing items, handles authentication, validates incoming requests, and protects private routes with JWT-based authorization.
 
-## Backend repository
+## Repositories
 
 - [Backend repository](https://github.com/Puja-Gupta-coder/se_project_express)
+- [Frontend repository](https://github.com/Puja-Gupta-coder/Se_react_project)
 
 ## Project functionality
 
@@ -36,20 +37,11 @@ WTWR is a full-stack clothing application backend that stores users and clothing
 
 ## Frontend
 
-- [Frontend repository](https://github.com/Puja-Gupta-coder/Se_react_project)
-
 Clone the frontend repository and follow its README to install dependencies and start the client locally.
 
 ## Local API URL
 
 - http://localhost:3001
-
-## Deployed applications
-
-The frontend and backend do not have active deployments yet. Deployment requires a hosting account and a hosted MongoDB connection string. Add the public URLs here after deployment:
-
-- Frontend: not deployed
-- Backend API: not deployed
 
 ## Notes
 
