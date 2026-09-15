@@ -51,6 +51,10 @@ Clone the frontend repository and follow its README to install dependencies and 
 
 - [https://learning.privatedns.org/](https://learning.privatedns.org/)
 
+## Pitch audio
+
+- [Google Drive pitch audio](https://drive.google.com/file/d/1ERjIB5NgNLiV9zE3t5xf44Uk5WpgV8ap/view?usp=sharing)
+
 ## Notes
 
 - Request logs are written to `request.log`
