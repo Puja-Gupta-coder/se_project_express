@@ -65,11 +65,7 @@ const signin = (req, res, next) => {
       });
     })
     .catch((err) => {
-      if (err instanceof UnauthorizedError) {
-        next(err);
-      } else {
-        next(err);
-      }
+      next(err);
     });
 };
 
